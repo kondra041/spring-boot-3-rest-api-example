@@ -47,6 +47,35 @@ public class TutorialController {
     }
   }
 
+  @GetMapping("/tutorials")
+  public ResponseEntity<Map<String, Object>> getAllTutorials(@RequestParam(required = false) String title) {
+    try {
+      List<Tutorial> tutorials = new ArrayList<>();
+
+      if (title == null)
+        tutorialService.findAll().forEach(tutorials::add);
+      else
+        tutorialService.findByTitleContaining(title).forEach(tutorials::add);
+
+      Map<String, Object> response = new HashMap<>();
+      if (tutorials.isEmpty()) {
+        response.put("message", "No tutorials found");
+        response.put("data", Collections.emptyList());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+      }
+
+      response.put("message", "Tutorials retrieved successfully");
+      response.put("data", tutorials);
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    } catch (Exception e) {
+      Map<String, Object> response = new HashMap<>();
+      response.put("message", "Internal server error");
+      response.put("data", null);
+      return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+
   @GetMapping("/tutorials/{id}")
   public ResponseEntity<Tutorial> getTutorialById(@PathVariable("id") long id) {
     Tutorial tutorial = tutorialService.findById(id);

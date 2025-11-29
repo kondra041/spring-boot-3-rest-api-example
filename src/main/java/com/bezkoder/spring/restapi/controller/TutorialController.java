@@ -1,7 +1,6 @@
 package com.bezkoder.spring.restapi.controller;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,24 +27,33 @@ public class TutorialController {
   TutorialService tutorialService;
 
   @GetMapping("/tutorials")
-  public ResponseEntity<List<Tutorial>> getAllTutorials(@RequestParam(required = false) String title) {
+  public ResponseEntity<Map<String, Object>> getAllTutorials(@RequestParam(required = false) String title) {
     try {
-      List<Tutorial> tutorials = new ArrayList<Tutorial>();
+      List<Tutorial> tutorials = new ArrayList<>();
 
       if (title == null)
         tutorialService.findAll().forEach(tutorials::add);
       else
         tutorialService.findByTitleContaining(title).forEach(tutorials::add);
 
+      Map<String, Object> response = new HashMap<>();
       if (tutorials.isEmpty()) {
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        response.put("message", "No tutorials found");
+        response.put("data", Collections.emptyList());
+        return new ResponseEntity<>(response, HttpStatus.OK);
       }
 
-      return new ResponseEntity<>(tutorials, HttpStatus.OK);
+      response.put("message", "Tutorials retrieved successfully");
+      response.put("data", tutorials);
+      return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (Exception e) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+      Map<String, Object> response = new HashMap<>();
+      response.put("message", "Internal server error");
+      response.put("data", null);
+      return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
 
   @GetMapping("/tutorials/{id}")
   public ResponseEntity<Tutorial> getTutorialById(@PathVariable("id") long id) {

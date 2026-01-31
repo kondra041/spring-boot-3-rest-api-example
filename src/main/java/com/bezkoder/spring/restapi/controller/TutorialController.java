@@ -58,16 +58,23 @@ public class TutorialController {
     }
   }
 
-  @PostMapping("/tutorials")
-  public ResponseEntity<Tutorial> createTutorial(@RequestBody Tutorial tutorial) {
-    try {
-      Tutorial _tutorial = tutorialService
-          .save(new Tutorial(tutorial.getTitle(), tutorial.getDescription(), false));
-      return new ResponseEntity<>(_tutorial, HttpStatus.CREATED);
-    } catch (Exception e) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+   @PostMapping("/tutorials")
+    public ResponseEntity<Tutorial> createTutorial(@RequestBody Tutorial tutorial) {
+        if (tutorial.getTitle() == null || tutorial.getTitle().isBlank()) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            // Создание Tutorial с published=false
+            Tutorial _tutorial = tutorialService.save(
+                    new Tutorial(tutorial.getTitle(), tutorial.getDescription(), false)
+            );
+            return new ResponseEntity<>(_tutorial, HttpStatus.CREATED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-  }
 
   @PutMapping("/tutorials/{id}")
   public ResponseEntity<Tutorial> updateTutorial(@PathVariable("id") long id, @RequestBody Tutorial tutorial) {

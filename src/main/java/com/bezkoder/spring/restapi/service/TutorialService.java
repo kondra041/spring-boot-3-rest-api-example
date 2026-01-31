@@ -30,6 +30,7 @@ public class TutorialService {
     if (tutorial.getId() != 0) {
       long _id = tutorial.getId();
 
+      System.out.println("тест");
       
       for (int idx = 0; idx < tutorials.size(); idx++)
         if (_id == tutorials.get(idx).getId()) {

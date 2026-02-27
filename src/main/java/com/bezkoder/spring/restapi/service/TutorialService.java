@@ -29,7 +29,6 @@ public class TutorialService {
     // update Tutorial
     if (tutorial.getId() != 0) {
       long _id = tutorial.getId();
-
       
       for (int idx = 0; idx < tutorials.size(); idx++)
         if (_id == tutorials.get(idx).getId()) {
